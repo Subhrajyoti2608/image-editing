@@ -9,12 +9,34 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def processImage(filename, operation):
-    pass
+    image = cv2.imread(f"uploads/{filename}")
+    match operation:
+        case "gray":
+            gray=cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            newFileName = f"static/{filename}"
+            cv2.imwrite(newFileName, gray)
+            return newFileName
+        case "cjpg":
+            newFileName = f"static/{filename.split('.')[0] + '.jpg'}"
+            cv2.imwrite(newFileName, image)
+            return newFileName
+        case "cpng":
+            newFileName = f"static/{filename.split('.')[0] + '.png'}"
+            cv2.imwrite(newFileName, image)
+            return newFileName
+        case "cwebp":
+            newFileName = f"static/{filename.split('.')[0] + '.webp'}"
+            cv2.imwrite(newFileName, image)
+            return newFileName
+        
+
+
 
 @app.route("/")
 def hello_world():
@@ -28,8 +50,10 @@ def edit():
         if 'file' not in request.files:
             flash('No file part')
             return "Error no file received!"
+        print(request.form)
         file = request.files['file']
         operation = request.form['operation']
+        
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
         if file.filename == '':
@@ -38,10 +62,10 @@ def edit():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            processImage(filename, operation)
+            newFileName=processImage(filename, operation)
 
-            return f"Your file is available <a href='/static/{filename}'> here </a>"
+            return f"Your file is available <a href='{newFileName}'> here </a>"
     return render_template("index.html")
 
 
-app.run(debug=True)
+app.run(debug=True, port=5001)

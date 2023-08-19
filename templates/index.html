@@ -44,6 +44,7 @@
         </div>
       </nav>
 
+
       <div class="container">
         <h1 class="my-4">Upload an image to edit online</h1>
         <form action="/edit" enctype="multipart/form-data" method="post">
@@ -53,11 +54,12 @@
               </div>
 
               <div class="input-group mb-3">
-                <select class="form-select" id="operation">
+                <select class="form-select" id="operation" name="operation">
                   <option selected>Choose Edit Operation</option>
                   <option value="cjpg">Convert to JPG</option>
                   <option value="cpng">Convert to PNG</option>
                   <option value="cwebp">Convert to Webp</option>
+                  <option value="gray">Convert to Greyscale</option>
                 </select>
                 <label class="input-group-text" for="operation">Options</label>
               </div>
